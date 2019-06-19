@@ -40,7 +40,7 @@ server <- function(input, output, session) {
                   #la_number == as.numeric(sapply(strsplit(input$county_of_interest[[1]], split = " "), "[[", 1))
                   ) %>%
       left_join(well_locations) %>%
-      # dplyr::filter(Well_Configuration == input$phase) %>% # filter by configuration
+      dplyr::filter(well_locations[well_locations$Well_County == input$county_of_interest[[1]],"Well_Configuration"] == paste(input$phase[[1]],"Well")) %>% # filter by configuration
       mutate(lat = Well_Latitude, long = Well_Longitude) %>% # create columns for lat-long
       select(-Well_Latitude, -Well_Longitude) %>%
       na.omit()
