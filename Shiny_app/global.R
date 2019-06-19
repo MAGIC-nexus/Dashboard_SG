@@ -60,7 +60,7 @@ oranges <- readRDS("PAdata/oranges.rds") #GrossExtraction_TJ # read_rds("data/or
 fruits <- dplyr::left_join(apples, oranges) # Join by Well_Permit_Num
 fruits$Well_Permit_Num <- as.factor(fruits$Well_Permit_Num) # convert Well_Permit_Num to factor
 
-# map_points <- well_locations
+map_points <- well_locations
 
 # MAPPING SETUP -----------------------------------------------------------
 
