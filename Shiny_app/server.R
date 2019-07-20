@@ -99,20 +99,22 @@ server <- function(input, output, session) {
     rug(wells_to_map()$GrossExtraction_TJ, ticksize = -0.15, lwd = 3, col = "blue")
   })
   
-  output$scatter_fruit <- renderPlot({
-    ggplot(fruits, aes(x = Depth, y = grossExtraction_TJ, col = "red")) +
-      # geom_bin2d() +
+  output$fruit_table_data_rows_selected = renderPrint(input$fruit_table_data_rows_selected)
+  
+  output$scatter_gas <- renderPlot({
+    ggplot(fruits, aes(x = Depth, y = GrossExtraction_TJ, col = "red")) +
+      geom_bin2d() +
       geom_point(alpha = 0.2) +
-      xlim(0, 1) + ylim(0, 1) +
+      xlim(0, 6000) + ylim(0, 1000) +
       geom_point(data = slice(wells_to_map(),
-                              input$fruit_table_data_rows_selected), #  Add our selected schools from the previous tab's table
+                              input$fruit_table_data_rows_selected), #  Add our selected wells from the previous tab's table
                  mapping = aes(x = Depth, y = GrossExtraction_TJ,
                                shape = "circle", colour = "blue",
                                size = 4.5)) +
-      annotate( "rect", xmin = 0.8 , xmax = 1.0, ymin = 0.8, ymax = 1.0,
-                alpha = 0.01, colour = "pink") +  #  Capture data points that are ripe for picking!
-      annotate("text", x = 0.9, y = 0.9,
-               label = "Cherry picking region", col = "black") +
+      # annotate( "rect", xmin = 0.8 , xmax = 1.0, ymin = 0.8, ymax = 1.0,
+      #           alpha = 0.01, colour = "pink") +  #  Capture data points that are ripe for picking!
+      # annotate("text", x = 0.9, y = 0.9,
+      #          label = "Cherry picking region", col = "black") +
       ggthemes::theme_tufte()
 
   })

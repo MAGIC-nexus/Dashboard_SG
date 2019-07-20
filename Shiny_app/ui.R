@@ -55,6 +55,7 @@ ui <- navbarPage("PA Well picker", id = "nav",
             br(),
             DT::dataTableOutput("fruit_table_data"),
             br(),
+            verbatimTextOutput('fruit_table_data_rows_selected'),
             h4("Table variables explained"),
             
             p("The variables are...",
