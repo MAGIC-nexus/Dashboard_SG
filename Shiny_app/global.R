@@ -5,7 +5,7 @@
 
 # What is global.R? -------------------------------------------------------
 # a script executed before app launches
-# the objects generated here can be used both in user and sever
+# the objects generated here can be used both in user interface and sever
 # these are actions that can be done once per session
 # such as library calls, data source loading and custom function sourcing
 
@@ -60,7 +60,7 @@ oranges <- readRDS("PAdata/oranges.rds") #GrossExtraction_TJ # read_rds("data/or
 fruits <- dplyr::left_join(apples, oranges) # Join by Well_Permit_Num
 fruits$Well_Permit_Num <- as.factor(fruits$Well_Permit_Num) # convert Well_Permit_Num to factor
 
-map_points <- well_locations
+
 
 # MAPPING SETUP -----------------------------------------------------------
 
@@ -69,22 +69,22 @@ map_points <- well_locations
 #latlong <- "+init=epsg:4326"
 
 # Create coordinates variable
-coords <- dplyr::select(map_points, Well_Latitude, Well_Longitude)
+coords <- dplyr::select(well_locations, Well_Latitude, Well_Longitude)
 # Create the SpatialPointsDataFrame, note coords and data are distinct slots in S4 object 
 # TODO check projection: epsg:7572
 
 #AreaOfUse [USA - Pennsylvania] Code: EPSG::1407 Name: USA - Pennsylvania
 #                                  Description: United States (USA) - Pennsylvania. SEE ALSO: North PA -> EPSG::32028 
-wells_sp <- sp::SpatialPointsDataFrame(coords,
-                                         data = dplyr::select(map_points, -Well_Latitude, -Well_Longitude),
-                                         proj4string = CRS(PA_counties_epsg)) # set the same CRS that the county boudaries hold
-
-# CONVERT TO LONG & LAT ---------------------------------------------------
-# Convert from Eastings and Northings to Latitude and Longitude
-# surplus_sp_ll <- spTransform(surplus_sp, CRS(latlong))
-# we ONLY need to rename the columns
-colnames(wells_sp@coords)[colnames(wells_sp@coords) == "Well_Longitude"] <- "longitude" 
-colnames(wells_sp@coords)[colnames(wells_sp@coords) == "Well_Latitude"] <- "latitude"
+# wells_sp <- sp::SpatialPointsDataFrame(coords,
+#                                          data = dplyr::select(well_locations, -Well_Latitude, -Well_Longitude),
+#                                          proj4string = CRS(PA_counties_epsg)) # set the same CRS that the county boudaries hold
+# 
+# # CONVERT TO LONG & LAT ---------------------------------------------------
+# # Convert from Eastings and Northings to Latitude and Longitude
+# # surplus_sp_ll <- spTransform(surplus_sp, CRS(latlong))
+# # we ONLY need to rename the columns
+# colnames(wells_sp@coords)[colnames(wells_sp@coords) == "Well_Longitude"] <- "longitude" 
+# colnames(wells_sp@coords)[colnames(wells_sp@coords) == "Well_Latitude"] <- "latitude"
 
 # With the data in place, the user, via the app, can select the appropriate PA region of interest to filter for
 

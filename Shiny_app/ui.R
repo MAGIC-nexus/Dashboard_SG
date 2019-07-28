@@ -24,13 +24,15 @@ ui <- navbarPage("PA Well picker", id = "nav",
                              includeCSS("styles.css")
                         ),
                        leafletOutput("mymap"), 
-                       br(),
+                br(),
+                verbatimTextOutput('wells_selected'),      
+                 br(),
                       p("Imagine you wanted to plot two continuous variables associated with around eighteen thousand wells in PA, 
-                      here we provide an app to demonstrate one solution."),
-                     p("We zoom in on a selected County and then show all the data for wells in that county
-                      filtered by configuration {Horizontal|Vertical}."),
-                     p("Importantly ", strong("all this data comes from a dummy file uploaded to MAGIC-NIS repository (supplied by Cristina M. on May 2019);"),
-                      " any apparently significant relationship among variables could be due to chance."),
+                       here we provide an app to demonstrate one solution."),
+                      p("We zoom in on a selected County and then show all the data for wells in that county
+                       filtered by configuration {Horizontal|Vertical}."),
+                      p("Importantly ", strong("all this data comes from a dummy file uploaded to MAGIC-NIS repository (supplied by Cristina M. on May 2019);"),
+                       " any apparently significant relationship among variables could be due to chance."),
                     
 	         # A PANEL holding some controls for filtering data
                       # Shiny versions prior to 0.11 should use class="modal" instead.
@@ -55,6 +57,7 @@ ui <- navbarPage("PA Well picker", id = "nav",
             br(),
             DT::dataTableOutput("fruit_table_data"),
             br(),
+            verbatimTextOutput('fruit_table_data_rows_selected'),
             h4("Table variables explained"),
             
             p("The variables are...",
@@ -68,16 +71,16 @@ ui <- navbarPage("PA Well picker", id = "nav",
               " to provide evidence for a spurious claim (e.g. drilling deeper causes wells to produce more gas).",
               style = "font-family: 'times'; font-si16pt"),
             
-            downloadButton("download_data", "Download"),
+            downloadButton("download_data", "Download"), actionLink("analitycs","Calculate smtg else... (to be coded)"),
             br(),
-            p("ISSUE: Following file download you may have to restart the app.", 
-              style = "font-family: 'times'; font-si16pt")
+            verbatimTextOutput('analitycs'), 
+            p('DISCLAIMER',style = "font-family: 'times'; font-si16pt")
    ),
    
    # 3rd TAB: shows the correlation between depth and gas production for the selected wells 
    tabPanel("Gas limit",
             h4("Wells selected from Data explorer tab"),
-            DT::dataTableOutput("gas_wells"),
+            # DT::dataTableOutput("gas_wells"),
             plotOutput("scatter_gas", height = 200),
             h4("How deep wells are required to feed the ES with enough gas?"),
             p("This app was developed to showcase a Shiny app in R using the Leaflet package. Use your imagination, make an interactive dashboard with maps!",
