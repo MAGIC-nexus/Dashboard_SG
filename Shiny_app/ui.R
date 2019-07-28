@@ -71,7 +71,7 @@ ui <- navbarPage("PA Well picker", id = "nav",
               " to provide evidence for a spurious claim (e.g. drilling deeper causes wells to produce more gas).",
               style = "font-family: 'times'; font-si16pt"),
             
-            downloadButton("download_data", "Download"), actionLink("analitycs","Calculate"),
+            downloadButton("download_data", "Download"), actionLink("analitycs","Calculate smtg else... (to be coded)"),
             br(),
             verbatimTextOutput('analitycs'), 
             p('DISCLAIMER',style = "font-family: 'times'; font-si16pt")

@@ -69,7 +69,7 @@ fruits$Well_Permit_Num <- as.factor(fruits$Well_Permit_Num) # convert Well_Permi
 #latlong <- "+init=epsg:4326"
 
 # Create coordinates variable
-coords <- dplyr::select(map_points, Well_Latitude, Well_Longitude)
+coords <- dplyr::select(well_locations, Well_Latitude, Well_Longitude)
 # Create the SpatialPointsDataFrame, note coords and data are distinct slots in S4 object 
 # TODO check projection: epsg:7572
 

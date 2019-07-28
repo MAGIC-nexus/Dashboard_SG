@@ -36,7 +36,7 @@ server <- function(input, output, session) {
   # Join data and filter for County and configuration by user input
   # (filtering variables could be changed/added)
   
-  wells <- reactiveValues(to_map = NULL) # Instantiate a reactive container for current wells data
+  wells <- reactiveValues(to_map = NULL, sel = NULL) # Instantiate a reactive container for current wells data
   
   observeEvent(c(input$county_of_interest, input$phase), # update current wells' selection based on the filters
                {
@@ -49,10 +49,15 @@ server <- function(input, output, session) {
                                 dplyr::filter(well_locations[well_locations$Well_County == input$county_of_interest[[1]],"Well_Configuration"] == paste(input$phase[[1]],"Well")) %>% # filter by configuration
                                 mutate(lat = Well_Latitude, long = Well_Longitude) %>% # create columns for lat-long
                                 select(-Well_Latitude, -Well_Longitude) %>%
-                                na.omit() %>% # drop rows with NA
-                                mutate(vec_sel = FALSE) # add a column for selection
+                                na.omit() # drop rows with NA
                },
                ignoreNULL = FALSE ) # perform the update also on start-up
+  
+  observeEvent(wells$to_map,
+               {
+                 wells$sel <- vector(mode = 'logical', length = length(wells$to_map$Well_Permit_Num)) # init the sel vector to the default no well
+               })
+              
   
   # wells_to_map <- reactive({
   #   dplyr::filter(fruits,
@@ -82,14 +87,14 @@ server <- function(input, output, session) {
   # })
   
   observeEvent(input$mymap_marker_click$id, { # Observe clicks on any marker in the map to
-      sel <- wells$to_map$vec_sel
+      sel <- wells$sel
       ii <- match(input$mymap_marker_click$id, wells$to_map$Well_Permit_Num)[1]
       lii <- vector(mode = "logical", length = length(sel))
       lii[ii] <- TRUE
       newsel <- xor(as.logical(sel),lii)
                #print(c("pri", sel)) # debugging
                # print(c("pos", newsel)) # debugging
-      isolate(wells$to_map$vec_sel <- newsel)     # set the new status to global reactive global variable wells: IT DOES  WORK!
+      isolate(wells$sel <- newsel)     # set the new status to global reactive variable wells$sel
                #wells_to_map()$vec_se <- 1-(wells_to_map()$vec_sel[match(wells_to_map()$Well_Permit_Num, input$mymap_marker_click$id)])
   })
 
@@ -102,7 +107,7 @@ server <- function(input, output, session) {
     expr = datatable(
       wells$to_map %>%  #  Notice the parentheses! ()
         select("Well_Permit_Num", "GrossExtraction_TJ", "Depth"),
-      selection =  list(mode = 'multiple', selected = which(wells$to_map$vec_sel), target = 'row')  #  selection comes from map clicks
+      selection =  list(mode = 'multiple', selected = which(wells$sel), target = 'row')  #  selection comes from map clicks
     ) %>%
       #  see http://rstudio.github.io/DT/functions.html
       formatStyle(
@@ -302,13 +307,13 @@ server <- function(input, output, session) {
       addMarkers(lng = wells_sp_ll()@coords[, "longitude"],
                  lat = wells_sp_ll()@coords[, "latitude"],
                  layerId = wells_sp_ll()@data$Well_Permit_Num, # Use the WPN as Id to check for selection by clicking makers
-                 icon = WellIcons[ifelse(wells_sp_ll()@data$vec_sel, "orange","blue")], # ~WellIcons[ifelse(wells_sp_ll()@data$vec_sel, "orange","blue")], # TODO Set icon marker color depending on the selection status
-                 popup = NULL, # as.character(paste(wells_sp_ll()@data$Well_Permit_Num,
-                 #                            "has a gross production of",
-                 #                            round(wells_sp_ll()@data$GrossExtraction_TJ),
-                 #                            "TJ per year.",
-                 #                            sep = "\n")),
-                 # options = popupOptions(closeButton = TRUE),
+                 icon = WellIcons[ifelse(wells$sel, "orange","blue")], # ~WellIcons[ifelse(wells_sp_ll()@data$vec_sel, "orange","blue")], # TODO Set icon marker color depending on the selection status
+                 popup = as.character(paste(wells_sp_ll()@data$Well_Permit_Num,
+                                            "has a gross production of",
+                                            round(wells_sp_ll()@data$GrossExtraction_TJ),
+                                            "TJ per year.",
+                                            sep = "\n")),
+                 options = popupOptions(closeButton = TRUE),
                  group = "Info" ) %>% 
       addLayersControl(
         baseGroups = c("Terrain", "OSM (B & W)"),
@@ -318,7 +323,7 @@ server <- function(input, output, session) {
         options = layersControlOptions(collapsed = FALSE)
     )
       # and so on in a similar fashion for the rest of your shapes
-  })
+  }) # raised priority
  
 
  # # HANDLE click on markers in the map for selecting wells
